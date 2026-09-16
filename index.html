@@ -1,30 +1,16 @@
- function onEdit(e) {
-  var sheet = e.source.getActiveSheet();
-  var range = e.range;
-  
-  // Check if edit is in Status column (Column 9 / I) and set to "Completed"
-  if (range.getColumn() == 9 && e.value == "Completed") {
-    var row = range.getRow();
-    var today = new Date();
-    
-    // Update Last Service Date (Column G / 7) to Today's Date
-    sheet.getRange(row, 7).setValue(today);
-  }
-}
-[23:38, 16/9/2026] Sunil Puri: <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="hi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HVAC Service & Complaint Live Portal</title>
+    <title>HVAC Facility Maintenance & Complaint Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body { background-color: #f4f6f9; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
         .kpi-card { border-radius: 12px; border: none; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
         .table-container { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-        .badge-completed { background-color: #198754; }
+        .badge-completed { background-color: #198754; color: white; }
         .badge-pending { background-color: #ffc107; color: #000; }
-        .badge-complaint { background-color: #dc3545; }
     </style>
 </head>
 <body class="p-4">
@@ -39,25 +25,25 @@
     <div class="row g-3 mb-4">
         <div class="col-md-3">
             <div class="card kpi-card bg-primary text-white p-3">
-                <small class="text-uppercase fw-bold">Total Units</small>
+                <small class="text-uppercase fw-bold">TOTAL UNITS</small>
                 <h2 id="totalUnits" class="mb-0">--</h2>
             </div>
         </div>
         <div class="col-md-3">
             <div class="card kpi-card bg-success text-white p-3">
-                <small class="text-uppercase fw-bold">Completed</small>
+                <small class="text-uppercase fw-bold">COMPLETED</small>
                 <h2 id="completedCount" class="mb-0">--</h2>
             </div>
         </div>
         <div class="col-md-3">
             <div class="card kpi-card bg-warning text-dark p-3">
-                <small class="text-uppercase fw-bold">Due Soon / Weekly</small>
+                <small class="text-uppercase fw-bold">DUE SOON / WEEKLY</small>
                 <h2 id="weeklyCount" class="mb-0">--</h2>
             </div>
         </div>
         <div class="col-md-3">
             <div class="card kpi-card bg-danger text-white p-3">
-                <small class="text-uppercase fw-bold">Active Complaints</small>
+                <small class="text-uppercase fw-bold">ACTIVE COMPLAINTS</small>
                 <h2 id="complaintCount" class="mb-0">--</h2>
             </div>
         </div>
@@ -91,11 +77,16 @@
 </div>
 
 <script>
-    // Deploy ki hui Google Web App URL yahan paste karein
+    // Apni Deployed Google Web App URL ko niche double quotes ke andar paste karein
     const SCRIPT_URL = "YOUR_DEPLOYED_GOOGLE_APPS_SCRIPT_URL_HERE";
 
     async function fetchData() {
         try {
+            if (SCRIPT_URL === "const SCRIPT_URL = "YOUR_DEPLOYED_GOOGLE_APPS_SCRIPT_URL_HERE";") {
+                document.getElementById("sheetDataTable").innerHTML = `<tr><td colspan="10" class="text-center text-warning py-4">Kripya index.html me SCRIPT_URL ki jagah apni Google Apps Script URL paste karein.</td></tr>`;
+                return;
+            }
+
             const res = await fetch(SCRIPT_URL);
             const data = await res.json();
             
@@ -131,14 +122,11 @@
 
         } catch (err) {
             console.error("Fetch Error: ", err);
-            document.getElementById("sheetDataTable").innerHTML = <tr><td colspan="10" class="text-center text-danger py-4">Failed to load data. Please check Web App URL deployment.</td></tr>;
+            document.getElementById("sheetDataTable").innerHTML = `<tr><td colspan="10" class="text-center text-danger py-4">Data load nahi ho paya. Google Apps Script Web App deployment check karein.</td></tr>`;
         }
     }
 
-    // Load data on page launch
-    if(SCRIPT_URL !== "YOUR_DEPLOYED_GOOGLE_APPS_SCRIPT_URL_HERE") {
-        fetchData();
-    }
+    fetchData();
 </script>
 
 </body>
