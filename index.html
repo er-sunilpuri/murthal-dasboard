@@ -1,92 +1,8 @@
-<!DOCTYPE html>
-<html lang="hi">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HVAC Facility Maintenance & Complaint Dashboard</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body { background-color: #f4f6f9; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        .kpi-card { border-radius: 12px; border: none; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-        .table-container { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-        .badge-completed { background-color: #198754; color: white; }
-        .badge-pending { background-color: #ffc107; color: #000; }
-    </style>
-</head>
-<body class="p-4">
-
-<div class="container-fluid">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h3 class="fw-bold text-dark">HVAC Facility Maintenance & Complaint Dashboard</h3>
-        <button class="btn btn-primary" onclick="fetchData()">🔄 Sync Live Data</button>
-    </div>
-
-    <!-- Live KPI Summary Section -->
-    <div class="row g-3 mb-4">
-        <div class="col-md-3">
-            <div class="card kpi-card bg-primary text-white p-3">
-                <small class="text-uppercase fw-bold">TOTAL UNITS</small>
-                <h2 id="totalUnits" class="mb-0">--</h2>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card kpi-card bg-success text-white p-3">
-                <small class="text-uppercase fw-bold">COMPLETED</small>
-                <h2 id="completedCount" class="mb-0">--</h2>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card kpi-card bg-warning text-dark p-3">
-                <small class="text-uppercase fw-bold">DUE SOON / WEEKLY</small>
-                <h2 id="weeklyCount" class="mb-0">--</h2>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="card kpi-card bg-danger text-white p-3">
-                <small class="text-uppercase fw-bold">ACTIVE COMPLAINTS</small>
-                <h2 id="complaintCount" class="mb-0">--</h2>
-            </div>
-        </div>
-    </div>
-
-    <!-- Equipment & Complaint Data Table -->
-    <div class="table-container">
-        <h5 class="fw-bold mb-3">Equipment Maintenance & Complaint Status</h5>
-        <div class="table-responsive">
-            <table class="table table-hover align-middle">
-                <thead class="table-light">
-                    <tr>
-                        <th>Sr.</th>
-                        <th>Equipment ID</th>
-                        <th>Type</th>
-                        <th>Location</th>
-                        <th>Frequency</th>
-                        <th>Last Service</th>
-                        <th>Next Due</th>
-                        <th>Status</th>
-                        <th>Complaint</th>
-                        <th>Resolution Status</th>
-                    </tr>
-                </thead>
-                <tbody id="sheetDataTable">
-                    <tr><td colspan="10" class="text-center py-4">Loading Live Sheet Data...</td></tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-</div>
-
 <script>
-    // Apni Deployed Google Web App URL ko niche double quotes ke andar paste karein
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxh1sIk_ZIeHZatKn6n_SvUQhaJtSBLt_0qCMf0Nd45o64L1myOZ8mEnXEk4dqFF9WC/exec";
 
     async function fetchData() {
         try {
-            if (SCRIPT_URL === "YOUR_DEPLOYED_GOOGLE_APPS_SCRIPT_URL_HERE") {
-                document.getElementById("sheetDataTable").innerHTML = `<tr><td colspan="10" class="text-center text-warning py-4">Kripya index.html me SCRIPT_URL ki jagah apni Google Apps Script URL paste karein.</td></tr>`;
-                return;
-            }
-
             const res = await fetch(SCRIPT_URL);
             const data = await res.json();
             
@@ -122,12 +38,9 @@
 
         } catch (err) {
             console.error("Fetch Error: ", err);
-            document.getElementById("sheetDataTable").innerHTML = `<tr><td colspan="10" class="text-center text-danger py-4">Data load nahi ho paya. Google Apps Script Web App deployment check karein.</td></tr>`;
+            document.getElementById("sheetDataTable").innerHTML = `<tr><td colspan="10" class="text-center text-danger py-4">Error loading data. Double check Web App URL permissions.</td></tr>`;
         }
     }
 
     fetchData();
 </script>
-
-</body>
-</html>
