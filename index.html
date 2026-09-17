@@ -1,46 +1,139 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HVAC Maintenance, Complaint & Store Management</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background-color: #f8f9fa; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        .card { border-radius: 12px; border: none; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .nav-pills .nav-link.active { background-color: #0d6efd; }
+    </style>
+</head>
+<body class="p-3 p-md-5">
+
+<div class="container" style="max-width: 950px;">
+    <h3 class="fw-bold mb-4 text-center">HVAC Facility & Store Management Portal</h3>
+
+    <!-- Nav Tabs -->
+    <ul class="nav nav-pills nav-justified mb-4" id="pills-tab">
+        <li class="nav-item"><button class="nav-link active fw-semibold" data-bs-toggle="pill" data-bs-target="#tab-complaint">1. Online Complaint</button></li>
+        <li class="nav-item"><button class="nav-link fw-semibold" data-bs-toggle="pill" data-bs-target="#tab-jobcard">2. Job Card & Store Issue</button></li>
+    </ul>
+
+    <div class="tab-content">
+        <!-- 1. COMPLAINT FORM -->
+        <div class="tab-pane fade show active" id="tab-complaint">
+            <div class="card p-4">
+                <h5 class="fw-bold text-danger mb-3">Raise Online Complaint</h5>
+                <form id="complaintForm">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Equipment ID</label>
+                        <input type="text" id="eqId" class="form-control" placeholder="e.g. AHU-01, CHILLER-02" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Issue / Problem Description</label>
+                        <textarea id="issue" class="form-control" rows="3" placeholder="Describe the problem..." required></textarea>
+                    </div>
+                    <button type="button" class="btn btn-danger w-100 fw-bold" onclick="submitComplaint()">Submit Complaint</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- 2. JOB CARD & STORE ISSUE FORM -->
+        <div class="tab-pane fade" id="tab-jobcard">
+            <div class="card p-4">
+                <h5 class="fw-bold text-success mb-3">Job Card, Store Issue & Resolution</h5>
+                <form id="jobCardForm">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-semibold">Complaint ID</label>
+                            <input type="text" id="cmpId" class="form-control" placeholder="e.g. CMP-4521" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-semibold">Technician Name</label>
+                            <input type="text" id="techName" class="form-control" placeholder="Technician Name" required>
+                        </div>
+                    </div>
+
+                    <!-- Store Issue Details -->
+                    <div class="p-3 bg-light rounded border mb-3">
+                        <h6 class="fw-bold text-primary mb-2">📦 Store Spare Part Issue</h6>
+                        <div class="row">
+                            <div class="col-md-6 mb-2">
+                                <label class="form-label small fw-semibold">Store Item Name / Code</label>
+                                <input type="text" id="itemName" class="form-control" placeholder="e.g. Air Filter 24x24 / R22 Gas" required>
+                            </div>
+                            <div class="col-md-3 mb-2">
+                                <label class="form-label small fw-semibold">Issued Qty</label>
+                                <input type="number" id="itemQty" class="form-control" value="1" min="1" required>
+                            </div>
+                            <div class="col-md-3 mb-2">
+                                <label class="form-label small fw-semibold">Warranty Status</label>
+                                <select id="warrantyStatus" class="form-select">
+                                    <option value="In Warranty">In Warranty</option>
+                                    <option value="Out of Warranty">Out of Warranty</option>
+                                    <option value="Replaced Free">Replaced Under Warranty</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Action Taken / Repair Summary</label>
+                        <textarea id="actionTaken" class="form-control" rows="2" placeholder="Describe repair work done..." required></textarea>
+                    </div>
+                    
+                    <button type="button" class="btn btn-success w-100 fw-bold" onclick="resolveComplaint()">Generate Job Card & Update Store Stock</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxh1sIk_ZIeHZatKn6n_SvUQhaJtSBLt_0qCMf0Nd45o64L1myOZ8mEnXEk4dqFF9WC/exec";
+    const SCRIPT_URL = "PASTE_YOUR_APPS_SCRIPT_WEB_APP_URL_HERE";
 
-    async function fetchData() {
+    async function submitComplaint() {
+        const payload = {
+            type: "newComplaint",
+            equipmentId: document.getElementById("eqId").value,
+            issue: document.getElementById("issue").value
+        };
+        
         try {
-            const res = await fetch(SCRIPT_URL);
+            const res = await fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify(payload) });
             const data = await res.json();
-            
-            let tableHTML = "";
-            let completed = 0, weekly = 0, complaints = 0;
-
-            data.forEach((row, index) => {
-                if(row["Status"] === "Completed") completed++;
-                if(row["Frequency"] === "weekly") weekly++;
-                if(row["Complaint"] && row["Complaint"] !== "") complaints++;
-
-                tableHTML += `
-                    <tr>
-                        <td>${index + 1}</td>
-                        <td class="fw-bold">${row["Equipment ID"] || ''}</td>
-                        <td>${row["Equipment Type"] || ''}</td>
-                        <td>${row["Location / Area"] || ''}</td>
-                        <td><span class="badge bg-secondary">${row["Frequency"] || ''}</span></td>
-                        <td>${row["Last Service Date"] ? new Date(row["Last Service Date"]).toLocaleDateString() : ''}</td>
-                        <td class="fw-bold text-primary">${row["Next Due Date"] ? new Date(row["Next Due Date"]).toLocaleDateString() : ''}</td>
-                        <td><span class="badge ${row["Status"] === 'Completed' ? 'badge-completed' : 'badge-pending'}">${row["Status"] || 'Pending'}</span></td>
-                        <td class="text-danger fw-semibold">${row["Complaint"] || '-'}</td>
-                        <td class="text-success fw-semibold">${row["Complaint Resolved"] || '-'}</td>
-                    </tr>
-                `;
-            });
-
-            document.getElementById("sheetDataTable").innerHTML = tableHTML;
-            document.getElementById("totalUnits").innerText = data.length;
-            document.getElementById("completedCount").innerText = completed;
-            document.getElementById("weeklyCount").innerText = weekly;
-            document.getElementById("complaintCount").innerText = complaints;
-
-        } catch (err) {
-            console.error("Fetch Error: ", err);
-            document.getElementById("sheetDataTable").innerHTML = `<tr><td colspan="10" class="text-center text-danger py-4">Error loading data. Double check Web App URL permissions.</td></tr>`;
+            alert("Complaint Registered! Complaint ID: " + data.id);
+            document.getElementById("complaintForm").reset();
+        } catch(e) {
+            alert("Error submitting complaint.");
         }
     }
 
-    fetchData();
+    async function resolveComplaint() {
+        const payload = {
+            type: "resolveJobCard",
+            complaintId: document.getElementById("cmpId").value,
+            technician: document.getElementById("techName").value,
+            itemName: document.getElementById("itemName").value,
+            itemQty: document.getElementById("itemQty").value,
+            warrantyStatus: document.getElementById("warrantyStatus").value,
+            spares: document.getElementById("itemName").value + " (Qty: " + document.getElementById("itemQty").value + ")",
+            action: document.getElementById("actionTaken").value
+        };
+
+        try {
+            const res = await fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify(payload) });
+            const data = await res.json();
+            alert("Job Card Generated! Job Card ID: " + data.jcId + " | Store Stock & Warranty Status Updated!");
+            document.getElementById("jobCardForm").reset();
+        } catch(e) {
+            alert("Error generating job card.");
+        }
+    }
 </script>
+</body>
+</html>
